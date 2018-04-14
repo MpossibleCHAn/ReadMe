@@ -1,7 +1,7 @@
 #### 数组去重的方法：
 
 
-```
+```JavaScript
 方法一：
 function removeDup1 (arr) {
     // 用于存放的临时数组
@@ -23,7 +23,7 @@ function removeDup1 (arr) {
 
 ```
 
-```
+```JavaScript
 方法二：
 function removeDup2(arr,id) {
     var h = {},      // 定义hash表
@@ -75,7 +75,7 @@ function removeDup3 (arr) {
   }
 
 ```
-```
+```JavaScript
 方法三：
 function removeDup4 (arr) {
     var temp = [];
@@ -93,7 +93,7 @@ function removeDup4 (arr) {
 此方法不适用于数组中的对象去重，适用于Number，Boolean，String类型去重；
 
 ```
-```
+```JavaScript
 方法四（骚操作）：
 function removeDup5 (arr) {
     var hash = {};
@@ -109,7 +109,7 @@ function removeDup5 (arr) {
 适用于各种类型去重，类似方法二，但是巧妙应用了reduce()；
 
 ```
-```
+```JavaScript
 方法五（ES6）：
 function  removeDup6 (arr) {
     // Set是ES6中的新对象，允许存储任意类型的唯一值（不能重复），无论是原始值还是对象的引用
