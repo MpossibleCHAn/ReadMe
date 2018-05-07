@@ -56,37 +56,23 @@ console.log(obj.lang[1]);   //  test
 > 深复制：在计算机中开辟了一块新的内存地址用于存放复制的对象
 
 ```JavaScript
-function parseUrl(url) {
-  var obj = {},
-    proInd = url.indexOf('://'),
-    ipInd = null,
-    queryInd = url.indexOf('?'),
-    fragInd = url.indexOf('#');
-
-  // 网络协议
-  obj.protocol = url.substr(0, proInd);
-  ipInd = url.indexOf('/', proInd + 3);
-  // ip地址
-  obj.ip = ipInd != -1 ? url.substr(proInd + 3, ipInd - proInd - 3) : url.substr(proInd + 3);
-  if (obj.ip.indexOf(':') != -1) {
-    obj.hostname = obj.ip.split(':')[0];
-    obj.port = obj.ip.split(':')[1];
-  }
-  if (queryInd != -1) {
-    obj.path = url.substr(ipInd, queryInd - ipInd);
-    var temp;
-    temp = fragInd == -1 ? url.substr(queryInd + 1).split('&') : url.substr(queryInd + 1, fragInd - queryInd - 1).split('&');
-    var query = {};
-    for (var i = 0; i < temp.length; i++) {
-      query[temp[i].split('=')[0]] = temp[i].split('=')[1];
-    }
-    obj.query = query;
-  } else {
-    obj.path = fragInd != -1 ? url.substr(ipInd, fragInd - ipInd) : url.substr(ipInd);
-  }
-  obj.fragment = fragInd != -1 ? url.substr(fragInd + 1) : '';
-  console.log(obj);
-  return obj;
+// 深复制
+function deepClone(obj, temp) {
+  // 定义temp
+  var temp = temp || {};
+  // 遍历对象
+  for ( var i in obj ) {
+    // 判断对象属性是否是object（objec，Array）
+    if ( typeof obj[i] === 'object' ) {
+      // 对象属性的构造函数是否是Array
+      temp[i] = ( obj[i].constructor === Array ) ? [] : {};
+      // 递归
+      deepClone(obj[i], temp[i]);
+    } else {
+      temp[i] = obj[i];　　　
+    }　　　　
+  }　　
+  return temp;　　
 }
 ```
 
