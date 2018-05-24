@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>去重性能对比</title>
+</head>
+
+<body>
+  <script type="text/javascript">
+    // 我发现不同电脑的同一个浏览器运算时间不同，预测去重的性能与机器的处理能力有关，还有待验证！
+    console.time('createTime');
+    const arr = [];
+    for (let i = 0; i < 100000; i++) {
+      arr.push(Math.floor(100000 * Math.random()))
+    }
+    console.log(arr);
+    console.timeEnd('createTime'); // 生成100000个正整数所需时间大概 18ms
+
+    // 双重循环
+    Array.prototype.unique1 = function() {
+      const newArray = [];
+      let isRepeat;
+      for (let i = 0; i < this.length; i++) {
+        isRepeat = false;
+        for (let j = 0; j < newArray.length; j++) {
+          if (this[i] === newArray[j]) {
+            isRepeat = true;
+            break;
+          }
+        }
+        if (!isRepeat) {
+          newArray.push(this[i]);
+        }
+      }
+      return newArray;
+    }
+    console.time('removeTime');
+    // console.log(arr.unique1());
+    console.timeEnd('removeTime'); // time: 2500ms
+
+    Array.prototype.unique2 = function() {
+      const newArr = [];
+      let isRepeat;
+      for (let i = 0; i < this.length; i++) {
+        isRepeat = false;
+        for (let j = i + 1; j < this.length; j++) {
+          if (this[i] === this[j]) {
+            isRepeat = true;
+            break;
+          }
+        }
+        if (!isRepeat) {
+          newArr.push(this[i]);
+        }
+      }
+      return newArr;
+    }
+    console.time('removeTime');
+    // console.log(arr.unique2());
+    console.timeEnd('removeTime'); // time: 3246ms
+
+    Array.prototype.unique3 = function() {
+      const newArr = [];
+      for (let i = 0; i < this.length; i++) {
+        isRepeat = false;
+        for (let j = i + 1; j < this.length; j++) {
+          if (this[i] === this[j]) {
+            j = ++i
+          }
+        }
+        newArr.push(this[i]);
+      }
+      return newArr;
+    }
+    console.time('removeTime');
+    // console.log(arr.unique3());
+    console.timeEnd('removeTime'); // time: 6139ms
+
+    // indexOf():如果索引不是第一个索引，说明是重复值
+    Array.prototype.unique4 = function() {
+      return this.filter((item, index) => {
+        return this.indexOf(item) === index;
+      })
+    }
+    console.time('removeTime');
+    // console.log(arr.unique4());
+    console.timeEnd('removeTime'); // time: 4139ms
+
+    Array.prototype.unique5 = function() {
+      const newArray = [];
+      this.forEach(item => {
+        if (newArray.indexOf(item) === -1) {
+          newArray.push(item);
+        }
+      });
+      return newArray;
+    }
+    console.time('removeTime');
+    // console.log(arr.unique5());
+    console.timeEnd('removeTime'); // time: 3234ms
+
+    // sort():先对原数组进行排序，然后再进行元素比较。
+    Array.prototype.unique6 = function() {
+      const newArray = [];
+      this.sort();
+      for (let i = 0; i < this.length; i++) {
+        if (this[i] !== this[i + 1]) {
+          newArray.push(this[i]);
+        }
+      }
+      return newArray;
+    }
+    console.time('removeTime');
+    console.log(arr.unique6());
+    console.timeEnd('removeTime'); // time: 116ms
+
+    Array.prototype.unique7 = function() {
+      const newArr = [];
+      this.sort();
+      for (let i = 0; i < this.length; i++) {
+        if (this[i] !== newArr[newArr.length - 1]) {
+          newArr.push(this[i])
+        }
+      }
+      return newArr;
+    }
+    console.time('removeTime');
+    console.log(arr.unique7());
+    console.timeEnd('removeTime'); // time: 109ms
+
+    // includes()
+    Array.prototype.unique8 = function() {
+      const newArray = [];
+      this.forEach(item => {
+        if (!newArray.includes(item)) {
+          newArray.push(item);
+        }
+      });
+      return newArray;
+    }
+    console.time('removeTime');
+    // console.log(arr.unique8());
+    console.timeEnd('removeTime'); // time: 3521ms
+
+    // reduce()
+    Array.prototype.unique9 = function() {
+      return this.sort().reduce((init, current) => {
+        if (init.length === 0 || init[init.length - 1] !== current) {
+          init.push(current);
+        }
+        return init;
+      }, []);
+    }
+    console.time('removeTime');
+    console.log(arr.unique9());
+    console.timeEnd('removeTime'); // time: 75ms
+
+
+    // 对象键值对
+    Array.prototype.unique10 = function() {
+      const newArray = [];
+      const tmp = {};
+      for (let i = 0; i < this.length; i++) {
+        if (!tmp[typeof this[i] + this[i]]) {
+          tmp[typeof this[i] + this[i]] = 1;
+          newArray.push(this[i]);
+        }
+      }
+      return newArray;
+    }
+    console.time('removeTime');
+    console.log(arr.unique10());
+    console.timeEnd('removeTime'); // time: 66ms
+
+    // Map
+    Array.prototype.unique11 = function() {
+      const newArray = [];
+      const tmp = new Map();
+      for (let i = 0; i < this.length; i++) {
+        if (!tmp.get(this[i])) {
+          tmp.set(this[i], 1);
+          newArray.push(this[i]);
+        }
+      }
+      return newArray;
+    }
+    console.time('removeTime');
+    console.log(arr.unique11());
+    console.timeEnd('removeTime'); // time: 16ms
+
+    Array.prototype.unique12 = function() {
+      const tmp = new Map();
+      return this.filter(item => {
+        return !tmp.has(item) && tmp.set(item, 1);
+      })
+    }
+    console.time('removeTime');
+    console.log(arr.unique12());
+    console.timeEnd('removeTime'); // time: 16ms
+
+    // Set
+    Array.prototype.unique13 = function() {
+      const set = new Set(this);
+      return Array.from(set);
+    }
+    Array.prototype.unique14 = function() {
+      return [...new Set(this)];
+    }
+    console.time('removeTime');
+    console.log(arr.unique13());
+    console.timeEnd('removeTime'); // time: 20ms
+
+    // 经过综合考虑，最优的数组去重算法是采用Map数据结构实现的算法。
+  </script>
+</body>
+
+</html>
